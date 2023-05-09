@@ -13,11 +13,65 @@
         ]
       ]
     },
-    "Code": {
+    "IF1": {
       "main": [
         [
           {
             "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "IF1",
             "type": "main",
             "index": 0
           }
@@ -39,7 +93,7 @@
       "main": [
         [
           {
-            "node": "HTTP Request1",
+            "node": "IF2",
             "type": "main",
             "index": 0
           }
@@ -61,7 +115,7 @@
       "main": [
         [
           {
-            "node": "HTTP Request3",
+            "node": "IF3",
             "type": "main",
             "index": 0
           }
@@ -144,6 +198,50 @@
           }
         ]
       ]
+    },
+    "HTTP Request6": {
+      "main": [
+        [
+          {
+            "node": "IF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request8": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request9": {
+      "main": [
+        [
+          {
+            "node": "Code5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking \"Execute Workflow\"": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "createdAt": "2023-03-02T14:36:43.808Z",
@@ -155,8 +253,8 @@
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "position": [
-        800,
-        660
+        780,
+        780
       ],
       "webhookId": "c304d4a9-4b46-4ba9-9223-848a62fe66d4",
       "parameters": {
@@ -171,8 +269,8 @@
       "name": "HTTP Request",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        1240,
-        660
+        1440,
+        760
       ],
       "parameters": {
         "url": "https://support.lupcom.de/time_entries.json",
@@ -199,8 +297,8 @@
       "name": "Code",
       "type": "n8n-nodes-base.code",
       "position": [
-        1020,
-        660
+        1000,
+        780
       ],
       "parameters": {
         "jsCode": "const body = $input.all()[0].json.body;\n\nconst timeInterval = body.timeInterval;\nconst project = body.project;\nconst task = body.task;\nconst tags = body.tags[0];\n\nconst startDate = new Date(timeInterval.start);\nconst endDate = new Date(timeInterval.end);\n\nconst hours = Math.abs(endDate - startDate) / 36e5; // 36e5 is the number of milliseconds in an hour\n\nbody.hours = hours;\nbody.tagid = tags?.name ?? \"\";\n\nif (project) {\n  const regex = /(#)([0-9]*)/;\n  const projectNumber = project.name.match(regex);\n  if (projectNumber) {\n    body.projectid = projectNumber[2];\n  }\n}\n\nif (task) {\n  const regex = /(#)([0-9]*)/;\n  const taskNumber = task.name.match(regex)[2];\n  body.taskid = taskNumber;\n}\n\nlet date = body.timeInterval.start.split(\"T\")[0];\nbody.date = date;\n\nbody.description = body.description.replaceAll(\"\\\"\", \"\\'\");\n\nreturn body;"
@@ -213,8 +311,8 @@
       "type": "n8n-nodes-base.clockify",
       "notes": "Renames task in clockify, so you know if the time entry got synced.",
       "position": [
-        1880,
-        680
+        2200,
+        900
       ],
       "parameters": {
         "resource": "timeEntry",
@@ -242,8 +340,8 @@
       "name": "IF",
       "type": "n8n-nodes-base.if",
       "position": [
-        1460,
-        660
+        1780,
+        860
       ],
       "parameters": {
         "conditions": {
@@ -262,8 +360,8 @@
       "name": "Code1",
       "type": "n8n-nodes-base.code",
       "position": [
-        1680,
-        760
+        1980,
+        980
       ],
       "parameters": {
         "jsCode": "const body = $input.all()[0].json;\nconst error = body.error.message;\nconst regex = /\"\\{.*\\}\"/g;\nconst strErr = JSON.parse(error.match(regex)[0]);\nconst objErr = JSON.parse(strErr);\n\nbody.error.errStr = objErr.errors.join(\" - \");\n\nreturn body;"
@@ -304,8 +402,8 @@
       "name": "HTTP Request1",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        1220,
-        380
+        1480,
+        260
       ],
       "parameters": {
         "url": "https://support.lupcom.de/time_entries.json",
@@ -341,7 +439,7 @@
       "name": "Code3",
       "type": "n8n-nodes-base.code",
       "position": [
-        1440,
+        1840,
         380
       ],
       "parameters": {
@@ -354,7 +452,7 @@
       "name": "HTTP Request2",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        1660,
+        2040,
         380
       ],
       "parameters": {
@@ -382,8 +480,8 @@
       "name": "Webhook2",
       "type": "n8n-nodes-base.webhook",
       "position": [
-        820,
-        0
+        860,
+        -300
       ],
       "webhookId": "97a48faa-70f8-4679-9f1a-e50692f7a4ee",
       "parameters": {
@@ -398,8 +496,8 @@
       "name": "Code4",
       "type": "n8n-nodes-base.code",
       "position": [
-        1040,
-        0
+        1080,
+        -300
       ],
       "parameters": {
         "jsCode": "const body = $input.all()[0].json.body;\n\nconst timeInterval = body.timeInterval;\nconst project = body.project;\nconst task = body.task;\nconst tags = body.tags[0];\n\nconst idRegex = /<([0-9a-z]*)>/;\n\nconst startDate = new Date(timeInterval.start);\nconst endDate = new Date(timeInterval.end);\n\nconst hours = Math.abs(endDate - startDate) / 36e5; // 36e5 is the number of milliseconds in an hour\n\nbody.hours = hours;\nbody.tagid = tags?.name ?? \"\";\n\nif (project) {\n  const regex = /(#)([0-9]*)/;\n  const projectNumber = project.name.match(regex);\n  if (projectNumber) {\n    body.projectid = projectNumber[2];\n  }\n}\n\nif (task) {\n  const regex = /(#)([0-9]*)/;\n  const taskNumber = task.name.match(regex)[2];\n  body.taskid = taskNumber;\n}\n\nbody.description = body.description.replaceAll(\"\\\"\", \"\\'\");\n\nreturn body;"
@@ -411,8 +509,8 @@
       "name": "HTTP Request3",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        1220,
-        0
+        1640,
+        -440
       ],
       "parameters": {
         "url": "https://support.lupcom.de/time_entries.json",
@@ -448,8 +546,8 @@
       "name": "Code5",
       "type": "n8n-nodes-base.code",
       "position": [
-        1440,
-        0
+        1960,
+        -300
       ],
       "parameters": {
         "jsCode": "const time_entries = $input.all()[0].json.time_entries;\nconst idRegex = /<([0-9a-z]*)>/;\n\nconst clockifyId = $('Code4').all()[0].json.id;\n\nlet matchingTicket =  {};\ntime_entries.forEach(entry => {\n    let commentId = \"\";\n    const match = entry.comments.match(idRegex);\n\n    if (match){\n      commentId = match[1];\n    }\n\n    if (commentId == clockifyId) {\n      matchingTicket = entry;\n    }\n});\n\nreturn [{\"matchingTicket\": matchingTicket}];"
@@ -461,8 +559,8 @@
       "name": "HTTP Request4",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        1640,
-        0
+        2200,
+        -300
       ],
       "parameters": {
         "url": "=https://support.lupcom.de/time_entries/{{ $json.matchingTicket.id }}.json",
@@ -501,8 +599,8 @@
       "name": "Sticky Note1",
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        800,
-        -120
+        840,
+        -420
       ],
       "parameters": {
         "width": 278.75,
@@ -516,8 +614,8 @@
       "name": "Sticky Note2",
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        800,
-        560
+        780,
+        680
       ],
       "parameters": {
         "width": 278.75,
@@ -525,6 +623,229 @@
         "content": "## Create Time Entry"
       },
       "typeVersion": 1
+    },
+    {
+      "id": "2362ed7d-2dde-4967-b42f-95fec79e398a",
+      "name": "When clicking \"Execute Workflow\"",
+      "type": "n8n-nodes-base.manualTrigger",
+      "disabled": true,
+      "position": [
+        760,
+        1220
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "22375de6-9c33-467b-afca-93d92f643e97",
+      "name": "HTTP Request5",
+      "type": "n8n-nodes-base.httpRequest",
+      "disabled": true,
+      "position": [
+        980,
+        1220
+      ],
+      "parameters": {
+        "url": "https://support.lupcom.de/projects.json",
+        "options": {},
+        "sendQuery": true,
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "100"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "2",
+          "name": "Planio jbath"
+        }
+      },
+      "typeVersion": 3,
+      "continueOnFail": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "dc8740d0-1127-46d7-b407-8b8d73817734",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        760,
+        1080
+      ],
+      "parameters": {
+        "width": 278.75,
+        "height": 104.46902654867256,
+        "content": "## Fetch Projects manually to see ids"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "3bfa513a-249d-43b4-b34f-b75a9ecbe5f1",
+      "name": "IF1",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1220,
+        780
+      ],
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.taskid }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "35572373-a1c8-479d-b736-3f2e312f5f40",
+      "name": "HTTP Request6",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1440,
+        940
+      ],
+      "parameters": {
+        "url": "https://support.lupcom.de/time_entries.json",
+        "method": "POST",
+        "options": {},
+        "jsonBody": "={\n  \"time_entry\": {\n    \"hours\": \"{{$json.hours}}\",\n    \"comments\": \"{{$json.description}} <{{ $json.id }}>\",\n\"project_id\": \"{{$json.projectid}}\",\n\"activity_id\": \"{{$json.tagid}}\",\n\"spent_on\": \"{{ $json.date }}\"\n  }\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth"
+      },
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "2",
+          "name": "Planio jbath"
+        }
+      },
+      "typeVersion": 3,
+      "continueOnFail": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "15dd898c-68fc-4596-9f27-1b9fb527a38d",
+      "name": "IF2",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1220,
+        380
+      ],
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.taskid }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "2baa6c72-7365-4e4c-bec7-f85de8d7814b",
+      "name": "HTTP Request8",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1480,
+        500
+      ],
+      "parameters": {
+        "url": "https://support.lupcom.de/time_entries.json",
+        "options": {},
+        "sendQuery": true,
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "project_id",
+              "value": "={{ $json.projectid }}"
+            },
+            {
+              "name": "limit",
+              "value": "100"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "2",
+          "name": "Planio jbath"
+        }
+      },
+      "typeVersion": 3,
+      "continueOnFail": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "5e47d488-e773-449e-af46-761218593450",
+      "name": "IF3",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1300,
+        -300
+      ],
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.taskid }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "b517ac1d-5f38-45b2-94c2-f9dcc6e7723d",
+      "name": "HTTP Request9",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1640,
+        -180
+      ],
+      "parameters": {
+        "url": "https://support.lupcom.de/time_entries.json",
+        "options": {},
+        "sendQuery": true,
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "project_id",
+              "value": "={{ $json.projectid }}"
+            },
+            {
+              "name": "limit",
+              "value": "100"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "2",
+          "name": "Planio jbath"
+        }
+      },
+      "typeVersion": 3,
+      "continueOnFail": true,
+      "alwaysOutputData": true
     }
   ],
   "pinData": {},
@@ -532,6 +853,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 3,
-  "updatedAt": "2023-03-29T07:27:28.000Z",
-  "versionId": "644c6a56-2960-4aaa-8f8e-be5846ab0483"
+  "updatedAt": "2023-05-09T07:09:15.000Z",
+  "versionId": "c1299dca-f707-4f17-a430-b62d1d1d9f0a"
 }
